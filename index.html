@@ -59,7 +59,7 @@
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer sk-proj-VZEslHnegkxKWWhqo8WAT3BlbkFJBNYT1rUfC13WQBkNcM0m`,
+            'Authorization': `Bearer sk-proj-VZEslHnegkxKWWhqo8WAT3BlbkFJBNYT1rUfC13WQBkNcM0m`,  // Reemplaza por tu clave API
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
@@ -67,11 +67,23 @@
             messages: [{ role: 'user', content: message }]
           })
         });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
         const data = await response.json();
-        const botMessage = data.choices[0].message.content;
-        addMessageToChat(botMessage, 'bot');
+
+        // Si la respuesta contiene un mensaje, lo mostramos
+        if (data.choices && data.choices.length > 0) {
+          const botMessage = data.choices[0].message.content;
+          addMessageToChat(botMessage, 'bot');
+        } else {
+          addMessageToChat('No se recibió respuesta del modelo.', 'bot');
+        }
       } catch (error) {
         console.error('Error al conectar con ChatGPT:', error);
+        addMessageToChat("Error al conectar con ChatGPT", 'bot');
       }
     }
 
