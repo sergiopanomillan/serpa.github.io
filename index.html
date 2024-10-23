@@ -59,8 +59,8 @@
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer sk-proj-VZEslHnegkxKWWhqo8WAT3BlbkFJBNYT1rUfC13WQBkNcM0m`, // Tu clave API
-            Content-Type: 'application/json'
+            'Authorization': 'Bearer sk-proj-VZEslHnegkxKWWhqo8WAT3BlbkFJBNYT1rUfC13WQBkNcM0m', // Tu clave API
+            'Content-Type' : 'application/json'
           },
           body: JSON.stringify({
             model: 'gpt-3.5-turbo',
