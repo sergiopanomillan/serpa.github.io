@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatGPT Widget</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #chatWindow {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+    }
+    #chatInput {
+      width: 80%;
+      padding: 10px;
+    }
+    #sendButton {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .user-message, .bot-message {
+      margin: 10px 0;
+    }
+    .user-message {
+      text-align: right;
+    }
+    .bot-message {
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="chatWindow"></div>
+  <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." />
+  <button id="sendButton">Enviar</button>
+
+  <script>
+    const chatWindow = document.getElementById('chatWindow');
+    const chatInput = document.getElementById('chatInput');
+    const sendButton = document.getElementById('sendButton');
+
+    // Función para agregar un mensaje al chat
+    function addMessageToChat(content, sender) {
+      const messageElement = document.createElement('div');
+      messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+      messageElement.textContent = content;
+      chatWindow.appendChild(messageElement);
+      chatWindow.scrollTop = chatWindow.scrollHeight; // Mantener el scroll en el fondo
+    }
+
+    // Función para enviar un mensaje a la API de ChatGPT
+    async function sendMessageToChatGPT(message) {
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer sk-proj-VZEslHnegkxKWWhqo8WAT3BlbkFJBNYT1rUfC13WQBkNcM0m`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [{ role: 'user', content: message }]
+          })
+        });
+        const data = await response.json();
+        const botMessage = data.choices[0].message.content;
+        addMessageToChat(botMessage, 'bot');
+      } catch (error) {
+        console.error('Error al conectar con ChatGPT:', error);
+      }
+    }
+
+    // Evento para enviar el mensaje cuando el botón es clicado
+    sendButton.addEventListener('click', () => {
+      const userMessage = chatInput.value;
+      if (userMessage) {
+        addMessageToChat(userMessage, 'user');
+        sendMessageToChatGPT(userMessage);
+        chatInput.value = '';
+      }
+    });
+
+    // Permitir enviar mensajes presionando Enter
+    chatInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        sendButton.click();
+      }
+    });
+  </script>
+
+</body>
+</html>
